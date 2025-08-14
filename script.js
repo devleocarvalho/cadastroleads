@@ -21,9 +21,10 @@ document.getElementById('form-consumidor').addEventListener('submit', async func
 
         if (resposta.ok) {
             console.log('Lead cadastrado com sucesso!');
-            document.getElementById('form-consumidor').reset();
             alert('Lead cadastrado com sucesso!');
+            document.getElementById('form-consumidor').reset();
         } else {
+             
             const erro = await resposta.json();
             console.error('Erro ao cadastrar o lead:', erro);
             alert('Erro ao cadastrar o lead. Por favor, tente novamente.');
