@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>cadastro leads</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <h1 class="app-title">cadastro leads newsletes</h1>
+        </div>
+    </header>
+    <main class="container main-content">
+        <section id="cadastro-consumidor" class="content-section">
+            <h2 class="section-title">Cadastro</h2>
+            <form id="form-consumidor" class="form-layout">
+                <div class="form-group">
+                    <label for="consumidor-nome">Nome:</label>
+                    <input type="text" id="consumidor-nome" name="nome" required>
+                </div>
+                <div class="form-group">
+                    <label for="consumidor-telefone">Telefone:</label>
+                    <input type="tel" id="consumidor-telefone" name="telefone" required placeholder="(XX) XXXXX-XXXX">
+                </div>
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </form>
+        </section>
+    </main>
+    <footer class="footer">
+        <p> 2025 leads. Todos os direitos reservados a @devleocarvalho.</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
