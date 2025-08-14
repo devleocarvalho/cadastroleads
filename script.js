@@ -5,8 +5,8 @@ document.getElementById('form-consumidor').addEventListener('submit', async func
     const telefone = document.getElementById('consumidor-telefone').value;
 
     const dadosLead = {
-        nome: nome,
-        telefone: telefone
+        Nome: nome,
+        Telefone: telefones
     };
 
     try {
