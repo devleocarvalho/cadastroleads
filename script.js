@@ -25,9 +25,10 @@ document.getElementById('form-consumidor').addEventListener('submit', async func
             document.getElementById('form-consumidor').reset();
         } else {
              
-            const erro = await resposta.json();
-            console.error('Erro ao cadastrar o lead:', erro);
-            alert('Erro ao cadastrar o lead. Por favor, tente novamente.');
+            const erro = await resposta.text(); 
+            console.error('Status da requisição:', resposta.status);
+            console.error('Mensagem de erro do servidor:', erro);
+            alert('Erro ao cadastrar o lead. Por favor, cheque o console do navegador para mais detalhes.');
         }
     } catch (error) {
         console.error('Erro na requisição:', error);
