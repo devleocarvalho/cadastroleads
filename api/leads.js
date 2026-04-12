@@ -42,14 +42,23 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { nome, email, telefone, servico, mensagem } = req.body;
     try {
-      // 1. Insere o Lead
+      // 1. Verificação de Duplicidade (Regra de Integridade)
+      const existing = await sql`SELECT id FROM Leads WHERE email = ${email} LIMIT 1`;
+      if (existing.length > 0) {
+        return res.status(409).json({ 
+            error: 'E-mail já cadastrado!',
+            lesson: 'Integridade de Dados: Usamos restrições UNIQUE para evitar duplicidade e manter a base de dados limpa.'
+        });
+      }
+
+      // 2. Insere o Lead
       const leadResult = await sql`
         INSERT INTO Leads (nome, email, telefone, servico, mensagem) 
         VALUES (${nome}, ${email}, ${telefone}, ${servico}, ${mensagem}) 
         RETURNING *
       `;
       
-      // 2. Cria automaticamente a Conta de saldo (se não existir)
+      // 3. Cria automaticamente a Conta de saldo
       await sql`
         INSERT INTO Contas (email, saldo_horas)
         VALUES (${email}, 0)
