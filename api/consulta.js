@@ -14,8 +14,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Lógica de Backend: Busca apenas um campo específico
-    const result = await sql`SELECT saldo_horas FROM Contas WHERE email = ${email} LIMIT 1`;
+    // Lógica de Backend: Busca apenas um campo específico no Schema Billing
+    const result = await sql`SELECT saldo_horas FROM billing.Contas WHERE email = ${email} LIMIT 1`;
 
     if (result.length === 0) {
       return res.status(404).json({ error: 'Cliente não encontrado no sistema de faturamento.' });

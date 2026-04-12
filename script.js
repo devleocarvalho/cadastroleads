@@ -42,7 +42,7 @@ async function fetchLeads() {
     try {
         const response = await fetch('/api/leads');
         const data = await response.json();
-        logSecurity('GET Data', 'Leitura pública permitida. Prevenção de SQL Injection ativa no Neon SQL.', 'response');
+        logSecurity('GET (crm.Leads)', 'Leitura pública permitida no Schema CRM.', 'response');
         renderLeads(data);
     } catch (e) {
         logSecurity('Erro GET', 'Falha na conexão com o banco.', 'error');
@@ -55,11 +55,11 @@ document.getElementById('form-lead').addEventListener('submit', async (e) => {
     const payload = {
         nome: document.getElementById('lead-nome').value,
         email: document.getElementById('lead-email').value,
-        telefone: document.getElementById('lead-telefone').value,
+        telefone: document.getElementById('lead-telefone').value, // Embora não usemos no banco agora, mantemos o payload
         servico: document.getElementById('lead-servico').value
     };
 
-    logSecurity('POST Request', 'Enviando dados para criação. Este método é público.');
+    logSecurity('POST Request', 'Sincronizando dados entre crm.Leads e billing.Contas.');
 
     try {
         const res = await fetch('/api/leads', {
@@ -67,10 +67,14 @@ document.getElementById('form-lead').addEventListener('submit', async (e) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
+        const data = await res.json();
         if (res.ok) {
-            logSecurity('HTTP 201', 'Cadastro realizado!', 'response');
+            logSecurity('HTTP 201', 'Lead salvo no CRM e Conta criada no Billing.', 'response');
             showToast('Sucesso!');
             fetchLeads();
+        } else {
+            logSecurity('Erro 409', data.error, 'error');
+            showToast(data.error, 'error');
         }
     } catch (err) {}
 });
@@ -80,7 +84,7 @@ async function updateStatus(id, currentStatus) {
     const newStatus = currentStatus === 'Novo' ? 'Em Contato' : 'Fechado';
     const key = getAdminKey();
 
-    logSecurity('PATCH (Auth)', `Tentativa de acesso administrativo para ID ${id}. Enviando X-Admin-Key.`);
+    logSecurity('PATCH (crm.Leads)', `Tentativa de acesso administrativo no Schema CRM para ID ${id}.`);
 
     try {
         const res = await fetch('/api/leads', {
@@ -95,10 +99,10 @@ async function updateStatus(id, currentStatus) {
         const data = await res.json();
 
         if (res.status === 401) {
-            logSecurity('401 Unauthorized', data.lesson, 'error');
+            logSecurity('401 Unauthorized', data.error, 'error');
             showToast('Acesso Negado!', 'error');
         } else {
-            logSecurity('HTTP 200', 'Autorização confirmada. Status alterado.', 'response');
+            logSecurity('HTTP 200', 'Status alterado no Schema CRM.', 'response');
             fetchLeads();
         }
     } catch (err) {}
@@ -109,20 +113,19 @@ async function deleteLead(id) {
     if(!confirm('Deseja deletar?')) return;
     const key = getAdminKey();
 
-    logSecurity('DELETE Request', 'Solicitando remoção física de registro.');
+    logSecurity('DELETE (crm.Leads)', 'Remoção via CRM Schema. Acionando Gatilho de Auditoria (audit.Log).');
 
     try {
         const res = await fetch(`/api/leads?id=${id}`, {
             method: 'DELETE',
             headers: { 'x-admin-key': key }
         });
-        const data = await res.json();
 
         if (res.status === 401) {
-            logSecurity('CORS & Auth', 'Ação bloqueada. Chave administrativa inválida.', 'error');
+            logSecurity('Auth Error', 'Ação bloqueada no Schema CRM.', 'error');
             showToast('Chave Errada!', 'error');
         } else {
-            logSecurity('HTTP 200', 'Registro removido.', 'response');
+            logSecurity('HTTP 200', 'Registro removido e Log de auditoria gerado.', 'response');
             fetchLeads();
         }
     } catch (err) {}
@@ -134,7 +137,7 @@ async function consultarSaldo() {
     const box = document.getElementById('resultado-consulta');
     if(!email) return;
 
-    logSecurity('Consulta GET', `Verificando saldo do cliente: ${email}`);
+    logSecurity('GET (billing.Contas)', `Consultando saldo direto no Schema de Faturamento.`);
     box.classList.remove('hidden');
     box.innerHTML = 'Pesquisando...';
 
@@ -143,7 +146,7 @@ async function consultarSaldo() {
         const data = await res.json();
 
         if (res.ok) {
-            logSecurity('Data Found', 'Informação sensível de saldo recuperada.', 'response');
+            logSecurity('Data Recv', 'Informação sensível do Schema Billing recuperada.', 'response');
             box.innerHTML = `Saldo: <b>${data.saldo}h</b> <br> Status: ${data.status}`;
         } else {
             box.innerHTML = 'Cliente não encontrado.';
