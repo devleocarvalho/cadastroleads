@@ -38,18 +38,25 @@ export default async function handler(req, res) {
     }
   }
 
-  // --- [POST] Create ---
+  // --- [POST] Create Lead + Create Account ---
   if (req.method === 'POST') {
     const { nome, email, telefone, servico, mensagem } = req.body;
     try {
-      // DICA DE SEGURANÇA: O uso de template strings do Neon (sql`...`) 
-      // previne automaticamente SQL Injection através de parâmetros parametrizados.
-      const result = await sql`
+      // 1. Insere o Lead
+      const leadResult = await sql`
         INSERT INTO Leads (nome, email, telefone, servico, mensagem) 
         VALUES (${nome}, ${email}, ${telefone}, ${servico}, ${mensagem}) 
         RETURNING *
       `;
-      return res.status(201).json(result[0]);
+      
+      // 2. Cria automaticamente a Conta de saldo (se não existir)
+      await sql`
+        INSERT INTO Contas (email, saldo_horas)
+        VALUES (${email}, 0)
+        ON CONFLICT (email) DO NOTHING
+      `;
+
+      return res.status(201).json(leadResult[0]);
     } catch (error) {
       return res.status(500).json({ error: error.message });
     }

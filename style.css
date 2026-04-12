@@ -33,6 +33,51 @@ body {
 }
 
 .logo-container { display: flex; align-items: center; gap: 1rem; margin-bottom: 3rem; }
+
+/* FORMS & INPUTS */
+.form-card {
+    background: var(--glass);
+    padding: 2.5rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+}
+
+.grid-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.form-group { display: flex; flex-direction: column; gap: 0.6rem; }
+.form-group.span-2 { grid-column: span 2; }
+
+label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+input, select, textarea {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border);
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.05);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+input::placeholder { color: #475569; }
+
 .logo-icon { color: var(--primary); width: 32px; height: 32px; }
 .brand { font-size: 1.5rem; font-weight: 700; display: block; }
 .version { font-size: 0.7rem; color: var(--primary); font-family: 'JetBrains Mono'; }
