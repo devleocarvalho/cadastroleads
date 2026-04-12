@@ -94,6 +94,6 @@ CREATE TABLE Leads (
 2.  Importe na Vercel.
 3.  Adicione a variável de ambiente `DATABASE_URL` com sua conexão do Neon.
 4.  A Vercel criará automaticamente o **Endpoint de API** em `/api/leads`.
-
+ Definiremos uma senha simples (ex: admin123) para fins educativos.
 ---
 Desenvolvido por **Leonardo Carvalho** | *Tecnologia e Educação em Nuvem*

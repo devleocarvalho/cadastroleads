@@ -2,17 +2,30 @@ import { neon } from '@neondatabase/serverless';
 
 export default async function handler(req, res) {
   const sql = neon(process.env.DATABASE_URL);
+  const ADMIN_KEY = process.env.ADMIN_KEY || 'admin123'; // Senha mestra
 
-  // --- [HEAD] Verificação de disponibilidade ---
+  // --- [HEAD] & [OPTIONS] ---
   if (req.method === 'HEAD') {
     res.setHeader('X-System-Status', 'Operational');
     return res.status(200).end();
   }
-
-  // --- [OPTIONS] Métodos Suportados ---
   if (req.method === 'OPTIONS') {
     res.setHeader('Allow', 'GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS');
     return res.status(204).end();
+  }
+
+  // --- PROTEÇÃO DE CIBERSEGURANÇA (AUTORIZAÇÃO) ---
+  // Apenas GET e POST (Públicos) não precisam de chave.
+  // DELETE, PUT, PATCH (Administrativos) precisam da chave X-Admin-Key.
+  const sensitiveMethods = ['DELETE', 'PUT', 'PATCH'];
+  if (sensitiveMethods.includes(req.method)) {
+    const userKey = req.headers['x-admin-key'];
+    if (userKey !== ADMIN_KEY) {
+      return res.status(401).json({ 
+        error: 'Não autorizado!', 
+        lesson: 'Cibersegurança: O servidor bloqueou este método (Authorization Fail). Somente administradores com a chave correta podem alterar dados.' 
+      });
+    }
   }
 
   // --- [GET] Read ---
@@ -29,6 +42,8 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     const { nome, email, telefone, servico, mensagem } = req.body;
     try {
+      // DICA DE SEGURANÇA: O uso de template strings do Neon (sql`...`) 
+      // previne automaticamente SQL Injection através de parâmetros parametrizados.
       const result = await sql`
         INSERT INTO Leads (nome, email, telefone, servico, mensagem) 
         VALUES (${nome}, ${email}, ${telefone}, ${servico}, ${mensagem}) 
@@ -40,7 +55,7 @@ export default async function handler(req, res) {
     }
   }
 
-  // --- [PUT] Replace (Substituição Total) ---
+  // --- [PUT] Replace ---
   if (req.method === 'PUT') {
     const { id, nome, email, telefone, servico, mensagem } = req.body;
     try {
@@ -56,13 +71,11 @@ export default async function handler(req, res) {
     }
   }
 
-  // --- [PATCH] Update Parcial ---
+  // --- [PATCH] Partial ---
   if (req.method === 'PATCH') {
     const { id, status } = req.body;
     try {
-      const result = await sql`
-        UPDATE Leads SET status = ${status} WHERE id = ${Number(id)} RETURNING *
-      `;
+      const result = await sql`UPDATE Leads SET status = ${status} WHERE id = ${Number(id)} RETURNING *`;
       return res.status(200).json(result[0]);
     } catch (error) {
       return res.status(500).json({ error: error.message });

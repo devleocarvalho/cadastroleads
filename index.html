@@ -1,143 +1,167 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LeadFlow Enterprise | Edição Educativa</title>
-    
-    <!-- 🏗️ IMPORTAÇÃO DE FONTES: O uso da 'Outfit' traz um ar moderno e premium. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <!-- 🛠️ ICONS: Lucide para um visual premium -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- 🎨 ESTILOS: Arquivo CSS externo para separação de responsabilidades (Clean Code). -->
+    <title>LeadFlow Pro | CRM & Cyber Security Lab</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts: Outfit & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
-    <div class="app-wrapper">
-        <!-- 📖 MONITOR DE APRENDIZADO (Sidebar)
-             DICA DE TI: Observar os logs é a maneira mais rápida de entender o fluxo de dados em um sistema real.
-        -->
-        <aside class="learning-sidebar">
-            <div class="sidebar-header">
-                <h3>📖 Laboratório de APIs</h3>
-                <p>Veja os pacotes JSON viajando entre o Cloud e seu PC.</p>
+<body class="glass-theme">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar shadow-premium">
+        <div class="logo-container">
+            <i data-lucide="shield-check" class="logo-icon"></i>
+            <div class="logo-text">
+                <span class="brand">LeadFlow</span>
+                <span class="version">Enterprise v3.0</span>
             </div>
-            <div id="learning-log" class="learning-log">
-                <div class="log-entry system">Iniciando ambiente de testes...</div>
+        </div>
+
+        <nav class="nav-menu">
+            <button class="nav-link active" id="nav-dashboard" onclick="showSection('dashboard')">
+                <i data-lucide="layout-dashboard"></i>
+                <span>Dashboard Admin</span>
+            </button>
+            <button class="nav-link" id="nav-cadastro" onclick="showSection('cadastro')">
+                <i data-lucide="user-plus"></i>
+                <span>Captura de Lead</span>
+            </button>
+            <button class="nav-link" id="nav-cliente" onclick="showSection('cliente')">
+                <i data-lucide="user-search"></i>
+                <span>Portal do Cliente</span>
+            </button>
+        </nav>
+
+        <!-- NOVO: ADMIN AUTH BOX -->
+        <div class="admin-auth-box">
+            <div class="auth-header">
+                <i data-lucide="lock"></i>
+                <span>Acesso Restrito</span>
             </div>
-        </aside>
+            <input type="password" id="admin-key-input" placeholder="Chave do Admin...">
+            <p class="auth-tip">Use: <code>admin123</code> para liberar DELETE/PATCH</p>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
         
-        <div class="main-container-wrapper">
-            <!-- 🪐 HEADER: Área superior de navegação (SPA Concept) -->
-            <header class="header">
-                <div class="container header-content">
-                    <div class="logo">
-                        <i data-lucide="zap" class="logo-icon-svg"></i>
-                        <h1 class="logo-text">LeadFlow <span class="text-primary-accent">Pro</span></h1>
-                    </div>
-                    <nav class="main-nav">
-                        <button id="nav-cadastro" class="nav-link active" onclick="showSection('cadastro')">Nova Captura</button>
-                        <button id="nav-dashboard" class="nav-link" onclick="showSection('dashboard')">CRM Admin</button>
-                    </nav>
+        <!-- SECTION: DASHBOARD -->
+        <section id="section-dashboard" class="content-section active">
+            <header class="section-header">
+                <div>
+                    <h1>Controle de Leads</h1>
+                    <p>Gerencie seus contatos e monitore a segurança</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-secondary" onclick="checkStatus()">
+                        <i data-lucide="activity"></i>
+                        <span>Check Status (HEAD)</span>
+                    </button>
                 </div>
             </header>
 
-            <main class="container main-content">
-                <!-- 📥 SEÇÃO DE CAPTURA (Frontend Forms)
-                     Aqui o estudante aprende sobre os diferentes tipos de <input>.
-                -->
-                <section id="section-cadastro" class="content-section active">
-                    <div class="card glass">
-                        <div class="card-header">
-                            <h2 class="section-title">Captura de Prospecto</h2>
-                            <p class="section-subtitle">Cada campo abaixo representa uma "coluna" na sua tabela do PostgreSQL.</p>
-                        </div>
-                        <form id="form-lead" class="form-grid">
-                            <div class="form-group span-2">
-                                <label>Nome Completo</label>
-                                <input type="text" id="lead-nome" required placeholder="Ex: Leonardo Carvalho">
-                            </div>
-                            <!-- O campo email valida automaticamente o formato (ex: @texto.com) -->
-                            <div class="form-group">
-                                <label>E-mail Corporativo</label>
-                                <input type="email" id="lead-email" required placeholder="exemplo@empresa.com">
-                            </div>
-                            <div class="form-group">
-                                <label>WhatsApp / Telefone</label>
-                                <input type="tel" id="lead-telefone" required placeholder="(XX) XXXXX-XXXX">
-                            </div>
-                            <div class="form-group span-2">
-                                <label>Serviço de Interesse (SELECT)</label>
-                                <select id="lead-servico">
-                                    <option value="Consultoria">Consultoria Técnica</option>
-                                    <option value="Desenvolvimento">Desenvolvimento de Software</option>
-                                    <option value="Suporte">Suporte 24/7</option>
-                                </select>
-                            </div>
-                            <div class="form-group span-2">
-                                <label>Mensagem Breve (TEXTAREA)</label>
-                                <textarea id="lead-mensagem" placeholder="Descreva brevemente a necessidade..."></textarea>
-                            </div>
-                            <!-- Botão de submissão triggera o evento 'submit' no JavaScript -->
-                            <button type="submit" id="btn-submit" class="btn btn-primary span-2">
-                                <span class="btn-text">Enviar para o PostgreSQL</span>
-                                <span class="btn-loader hidden"></span>
-                            </button>
-                        </form>
-                    </div>
-                </section>
+            <div class="table-container shadow-premium">
+                <table class="leads-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Lead</th>
+                            <th>Serviço</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leads-list">
+                        <!-- Gerado via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
-                <!-- 📊 SEÇÃO DASHBOARD (CRM View/Read)
-                     Aqui o estudante vê os dados retornados via GET do servidor.
-                -->
-                <section id="section-dashboard" class="content-section">
-                    <div class="card glass">
-                        <div class="card-header">
-                            <h2 class="section-title">Lead Management</h2>
-                            <p class="section-subtitle">Recuperação de dados via API REST para populamento da tabela.</p>
-                        </div>
-                        <div class="table-container">
-                            <table class="leads-table">
-                                <thead>
-                                    <tr>
-                                        <th>Status</th>
-                                        <th>Nome / Email</th>
-                                        <th>Interesse</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="leads-list">
-                                    <tr><td colspan="4" class="empty-state">Buscando registros na nuvem...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </section>
-            </main>
-
-            <!-- 👣 FOOTER: Rodapé informativo -->
-            <footer class="footer">
-                <div class="container">
-                    <p>&copy; 2024 Lab Professional Edition | Neon + Vercel + JavaScript Puro</p>
+        <!-- SECTION: CADASTRO -->
+        <section id="section-cadastro" class="content-section">
+            <header class="section-header">
+                <div>
+                    <h1>Novo Cadastro</h1>
+                    <p>Público: Este formulário não exige senha paraPOST.</p>
                 </div>
-            </footer>
-        </div> <!-- Fim do wrapper principal -->
-    </div> <!-- Fim do wrapper do app -->
+            </header>
+            <div class="form-card shadow-premium">
+                <form id="form-lead" class="grid-form">
+                    <div class="form-group span-2">
+                        <label>Nome Completo</label>
+                        <input type="text" id="lead-nome" required>
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" id="lead-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Telefone</label>
+                        <input type="tel" id="lead-telefone" required>
+                    </div>
+                    <div class="form-group span-2">
+                        <label>Serviço</label>
+                        <select id="lead-servico">
+                            <option value="Consultoria">Consultoria</option>
+                            <option value="Dev">Desenvolvimento</option>
+                        </select>
+                    </div>
+                    <div class="form-actions span-2">
+                        <button type="submit" class="btn-primary" id="btn-submit">
+                            <span>Gravar no Neon</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
 
-    <!-- 🔔 NOTIFICAÇÃO TOAST (Toast Feedback) -->
+        <!-- SECTION: PORTAL DO CLIENTE -->
+        <section id="section-cliente" class="content-section">
+            <header class="section-header">
+                <div>
+                    <h1>Portal do Cliente</h1>
+                    <p>Consulta de saldo via GET (Público)</p>
+                </div>
+            </header>
+            <div class="form-card shadow-premium">
+                <div class="consulta-box">
+                    <div class="search-input-group">
+                        <input type="email" id="consulta-email" placeholder="Digite seu e-mail de cliente...">
+                        <button class="btn-primary" onclick="consultarSaldo()">Consultar</button>
+                    </div>
+                    <div id="resultado-consulta" class="resultado-box hidden"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- API & SECURITY LAB -->
+    <aside class="api-lab">
+        <div class="lab-header">
+            <i data-lucide="zap"></i>
+            <h2>Security Lab</h2>
+        </div>
+        <div class="security-status" id="auth-status-indicator">
+            <span class="status-dot"></span> Modo: Visitante (Leitura)
+        </div>
+        <div class="lab-output" id="learning-log">
+            <!-- Logs em tempo real -->
+        </div>
+    </aside>
+
     <div id="toast" class="toast hidden">
         <span id="toast-message"></span>
     </div>
 
-    <!-- 🧠 LÓGICA PRINCIPAL (Cérebro do App) -->
+    <!-- SCRIPTS -->
     <script src="script.js"></script>
-    <script>
-        // Inicializa ícones Lucide
-        lucide.createIcons();
-    </script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>
