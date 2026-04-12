@@ -1,5 +1,5 @@
 /**
- * 🎓 LEADFLOW ENTERPRISE - CRM FULL CRUD
+ * 🎓 LEADFLOW ENTERPRISE - CRM FULL CRUD & HTTP RESEARCH
  */
 
 const formLead = document.getElementById('form-lead');
@@ -19,9 +19,31 @@ function logLearning(title, message, type = 'system') {
 
 // --- ON LOAD ---
 document.addEventListener('DOMContentLoaded', () => {
-    logLearning('LABORATÓRIO CRUD ATIVO', 'O sistema agora suporta as 4 operações: <b>Create, Read, Update e Delete</b>.');
+    logLearning('LABORATÓRIO HTTP ATIVO', 'Explorando: <b>GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS</b>.');
     fetchLeads();
+    checkApiOptions(); // Testa o método OPTIONS ao iniciar
 });
+
+// --- [OPTIONS] Teste de Capacidade ---
+async function checkApiOptions() {
+    logLearning('MÉTODO: OPTIONS', 'Solicitando métodos HTTP suportados pelo servidor.');
+    try {
+        const response = await fetch('/api/leads', { method: 'OPTIONS' });
+        const allowed = response.headers.get('Allow');
+        logLearning('HTTP 204 (No Content)', `Métodos permitidos: <b>${allowed}</b>`, 'response');
+    } catch (e) {}
+}
+
+// --- [HEAD] Verificação Rápida ---
+async function checkStatus() {
+    logLearning('MÉTODO: HEAD', 'Solicitando cabeçalhos (headers) sem o corpo da mensagem.');
+    try {
+        const response = await fetch('/api/leads', { method: 'HEAD' });
+        const status = response.headers.get('X-System-Status');
+        logLearning('HTTP 200 OK', `Status do Sistema: <b>${status}</b>`, 'response');
+        showToast('API Online (HEAD)');
+    } catch (e) {}
+}
 
 // --- [CREATE] POST ---
 formLead.addEventListener('submit', async (e) => {
@@ -34,7 +56,7 @@ formLead.addEventListener('submit', async (e) => {
         mensagem: document.getElementById('lead-mensagem').value
     };
 
-    logLearning('MÉTODO: POST (Create)', 'Enviando nova linha para o PostgreSQL.');
+    logLearning('MÉTODO: POST (Create)', 'Enviando payload completo para criação de novo recurso.');
     setLoading(true, btnSubmit);
 
     try {
@@ -43,13 +65,16 @@ formLead.addEventListener('submit', async (e) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-        if (!response.ok) throw new Error();
-        logLearning('HTTP 201', 'Lead persistido com sucesso.', 'response');
-        showToast('Cadastrado! ✅');
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error);
+        
+        logLearning('HTTP 201 Created', 'Novo recurso persistido no PostgreSQL.', 'response');
+        showToast('Lead Criado!');
         formLead.reset();
         fetchLeads();
     } catch (error) {
-        showToast('Erro ao cadastrar.', 'error');
+        logLearning('ERRO NO POST', error.message, 'error');
+        showToast('Erro no cadastro', 'error');
     } finally {
         setLoading(false, btnSubmit);
     }
@@ -57,26 +82,25 @@ formLead.addEventListener('submit', async (e) => {
 
 // --- [READ] GET ---
 async function fetchLeads() {
-    leadsList.innerHTML = '<tr><td colspan="4">Consultando banco...</td></tr>';
-    logLearning('MÉTODO: GET (Read)', 'Solicitando lista de registros.');
+    leadsList.innerHTML = '<tr><td colspan="4" class="empty-state">Buscando dados no Neon...</td></tr>';
+    logLearning('MÉTODO: GET (Read)', 'Solicitando representação atual dos recursos.');
     try {
         const response = await fetch('/api/leads');
         const data = await response.json();
-        logLearning('DADOS RECEBIDOS', `${data.length} leads retornados em formato JSON.`, 'response');
+        logLearning('HTTP 200 (JSON)', `${data.length} registros recebidos.`, 'response');
         renderLeads(data);
     } catch (error) {
         leadsList.innerHTML = '<tr><td colspan="4">Erro de conexão.</td></tr>';
     }
 }
 
-// --- [UPDATE] PATCH ---
-// DICA DE TI: Usamos PATCH para atualizar apenas uma parte do registro.
+// --- [UPDATE] PATCH vs PUT ---
 async function updateStatus(id, currentStatus) {
     const statuses = ['Novo', 'Em Contato', 'Fechado'];
     let nextIndex = (statuses.indexOf(currentStatus) + 1) % statuses.length;
     const newStatus = statuses[nextIndex];
 
-    logLearning('MÉTODO: PATCH (Update)', `Alterando status do ID ${id} para <b>${newStatus}</b>.`);
+    logLearning('MÉTODO: PATCH (Partial)', `Alterando apenas o campo <b>status</b> do ID ${id}.`);
 
     try {
         const response = await fetch('/api/leads', {
@@ -84,24 +108,29 @@ async function updateStatus(id, currentStatus) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, status: newStatus })
         });
-
         if (response.ok) {
-            logLearning('HTTP 200 OK', 'Status atualizado no PostgreSQL.', 'response');
-            fetchLeads(); // Recarrega a lista para mostrar a mudança.
+            logLearning('HTTP 200 OK', 'Alteração parcial aplicada.', 'response');
+            fetchLeads();
         }
-    } catch (error) {
-        logLearning('ERRO NO UPDATE', 'Não foi possível salvar o novo status.', 'error');
-    }
+    } catch (error) {}
+}
+
+// Simulação de PUT (Substituição Total)
+async function fullUpdate(id) {
+    logLearning('MÉTODO: PUT (Full)', `Substituindo recurso IDENTIFICADO pelo ID ${id} completamente.`);
+    showToast('Simulando substituição total...');
+    // No projeto real, abriria um modal com todos os campos preenchidos
+    // Aqui faremos um teste rápido para a aula
 }
 
 // --- [DELETE] DELETE ---
 async function deleteLead(id) {
-    if (!confirm('Excluir permanentemente?')) return;
-    logLearning('MÉTODO: DELETE (Delete)', `Removendo ID ${id} do banco.`);
+    if (!confirm('Deseja executar o método DELETE?')) return;
+    logLearning('MÉTODO: DELETE', `Removendo permanentemente o recurso ID ${id}.`);
     try {
         const res = await fetch(`/api/leads?id=${id}`, { method: 'DELETE' });
         if (res.ok) {
-            logLearning('HTTP 200 OK', 'Registro apagado fisicamente.', 'response');
+            logLearning('HTTP 200 OK', 'Recurso removido com sucesso.', 'response');
             showToast('Removido!');
             fetchLeads();
         }
@@ -113,7 +142,7 @@ async function deleteLead(id) {
 // --- RENDERIZAÇÃO ---
 function renderLeads(leads) {
     if (!leads || leads.length === 0) {
-        leadsList.innerHTML = '<tr><td colspan="4" class="empty-state">Banco de dados vazio. Nenhum lead capturado ainda.</td></tr>';
+        leadsList.innerHTML = '<tr><td colspan="4" class="empty-state">Sem dados para exibir.</td></tr>';
         return;
     }
     leadsList.innerHTML = leads.map(lead => `
@@ -121,8 +150,7 @@ function renderLeads(leads) {
             <td>
                 <span class="status-badge cursor-pointer" 
                       data-status="${lead.status || 'Novo'}" 
-                      onclick="updateStatus(${lead.id}, '${lead.status}')" 
-                      title="Clique para mudar status">
+                      onclick="updateStatus(${lead.id}, '${lead.status}')">
                     ${lead.status || 'Novo'}
                 </span>
             </td>
@@ -137,14 +165,10 @@ function renderLeads(leads) {
             </td>
             <td>
                 <div class="action-group">
-                    <button class="btn-action whatsapp" 
-                            onclick="window.open('https://wa.me/55${lead.telefone.replace(/\D/g, '')}')"
-                            title="Conversar no WhatsApp">
-                        <i data-lucide="message-circle" class="icon-sm"></i>
+                    <button class="btn-action" onclick="fullUpdate(${lead.id})" title="PUT (Replace)">
+                        <i data-lucide="edit-3" class="icon-sm"></i>
                     </button>
-                    <button class="btn-action delete" 
-                            onclick="deleteLead(${lead.id})"
-                            title="Excluir Registro">
+                    <button class="btn-action delete" onclick="deleteLead(${lead.id})" title="DELETE">
                         <i data-lucide="trash-2" class="icon-sm"></i>
                     </button>
                 </div>
@@ -152,9 +176,46 @@ function renderLeads(leads) {
         </tr>
     `).join('');
     
-    // Recarregar ícones Lucide após injetar HTML dinâmico
-    if (window.lucide) {
-        lucide.createIcons();
+    if (window.lucide) lucide.createIcons();
+}
+
+// --- PORTAL DO CLIENTE: CONSULTA DE SALDO ---
+async function consultarSaldo() {
+    const email = document.getElementById('consulta-email').value;
+    const resultBox = document.getElementById('resultado-consulta');
+
+    if (!email) {
+        showToast('Digite um e-mail', 'error');
+        return;
+    }
+
+    logLearning('MÉTODO: GET (Query)', `Consultando saldo processado no backend para: <b>${email}</b>`);
+    resultBox.classList.remove('hidden');
+    resultBox.innerHTML = '<p>Consultando banco de dados...</p>';
+
+    try {
+        const response = await fetch(`/api/consulta?email=${email}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            logLearning('HTTP 404', 'Cliente não encontrado.', 'error');
+            resultBox.innerHTML = `<div class="res-error">${data.error}</div>`;
+        } else {
+            logLearning('HTTP 200 OK', 'Dados de faturamento recuperados.', 'response');
+            resultBox.innerHTML = `
+                <div class="res-success">
+                    <h4>Dados do Cliente</h4>
+                    <p><b>E-mail:</b> ${data.email}</p>
+                    <div class="saldo-valor">
+                        <span>Horas Disponíveis:</span>
+                        <h2>${data.saldo}h</h2>
+                    </div>
+                    <span class="badge ${data.status.toLowerCase().replace(' ', '-')}">${data.status}</span>
+                </div>
+            `;
+        }
+    } catch (error) {
+        resultBox.innerHTML = 'Erro ao realizar consulta.';
     }
 }
 
