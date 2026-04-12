@@ -3,34 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>cadastro leads</title>
+    <title>LeadFlow Enterprise | Edição Educativa</title>
+    
+    <!-- 🏗️ IMPORTAÇÃO DE FONTES: O uso da 'Outfit' traz um ar moderno e premium. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 🎨 ESTILOS: Arquivo CSS externo para separação de responsabilidades (Clean Code). -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="header">
-        <div class="container header-content">
-            <h1 class="app-title">cadastro leads newsletes</h1>
-        </div>
-    </header>
-    <main class="container main-content">
-        <section id="cadastro-consumidor" class="content-section">
-            <h2 class="section-title">Cadastro</h2>
-            <form id="form-consumidor" class="form-layout">
-                <div class="form-group">
-                    <label for="consumidor-nome">Nome:</label>
-                    <input type="text" id="consumidor-nome" name="nome" required>
+    <div class="app-wrapper">
+        <!-- 📖 MONITOR DE APRENDIZADO (Sidebar)
+             DICA DE TI: Observar os logs é a maneira mais rápida de entender o fluxo de dados em um sistema real.
+        -->
+        <aside class="learning-sidebar">
+            <div class="sidebar-header">
+                <h3>📖 Laboratório de APIs</h3>
+                <p>Veja os pacotes JSON viajando entre o Cloud e seu PC.</p>
+            </div>
+            <div id="learning-log" class="learning-log">
+                <div class="log-entry system">Iniciando ambiente de testes...</div>
+            </div>
+        </aside>
+        
+        <div class="main-container-wrapper">
+            <!-- 🪐 HEADER: Área superior de navegação (SPA Concept) -->
+            <header class="header">
+                <div class="container header-content">
+                    <div class="logo">
+                        <span class="logo-icon">🚀</span>
+                        <h1 class="logo-text">LeadFlow v2</h1>
+                    </div>
+                    <nav class="main-nav">
+                        <button id="nav-cadastro" class="nav-link active" onclick="showSection('cadastro')">Nova Captura</button>
+                        <button id="nav-dashboard" class="nav-link" onclick="showSection('dashboard')">CRM Admin</button>
+                    </nav>
                 </div>
-                <div class="form-group">
-                    <label for="consumidor-telefone">Telefone:</label>
-                    <input type="tel" id="consumidor-telefone" name="telefone" required placeholder="(XX) XXXXX-XXXX">
+            </header>
+
+            <main class="container main-content">
+                <!-- 📥 SEÇÃO DE CAPTURA (Frontend Forms)
+                     Aqui o estudante aprende sobre os diferentes tipos de <input>.
+                -->
+                <section id="section-cadastro" class="content-section active">
+                    <div class="card glass">
+                        <div class="card-header">
+                            <h2 class="section-title">Captura de Prospecto</h2>
+                            <p class="section-subtitle">Cada campo abaixo representa uma "coluna" na sua tabela do PostgreSQL.</p>
+                        </div>
+                        <form id="form-lead" class="form-grid">
+                            <div class="form-group span-2">
+                                <label>Nome Completo</label>
+                                <input type="text" id="lead-nome" required placeholder="Ex: Leonardo Carvalho">
+                            </div>
+                            <!-- O campo email valida automaticamente o formato (ex: @texto.com) -->
+                            <div class="form-group">
+                                <label>E-mail Corporativo</label>
+                                <input type="email" id="lead-email" required placeholder="exemplo@empresa.com">
+                            </div>
+                            <div class="form-group">
+                                <label>WhatsApp / Telefone</label>
+                                <input type="tel" id="lead-telefone" required placeholder="(XX) XXXXX-XXXX">
+                            </div>
+                            <div class="form-group span-2">
+                                <label>Serviço de Interesse (SELECT)</label>
+                                <select id="lead-servico">
+                                    <option value="Consultoria">Consultoria Técnica</option>
+                                    <option value="Desenvolvimento">Desenvolvimento de Software</option>
+                                    <option value="Suporte">Suporte 24/7</option>
+                                </select>
+                            </div>
+                            <div class="form-group span-2">
+                                <label>Mensagem Breve (TEXTAREA)</label>
+                                <textarea id="lead-mensagem" placeholder="Descreva brevemente a necessidade..."></textarea>
+                            </div>
+                            <!-- Botão de submissão triggera o evento 'submit' no JavaScript -->
+                            <button type="submit" id="btn-submit" class="btn btn-primary span-2">
+                                <span class="btn-text">Enviar para o PostgreSQL</span>
+                                <span class="btn-loader hidden"></span>
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- 📊 SEÇÃO DASHBOARD (CRM View/Read)
+                     Aqui o estudante vê os dados retornados via GET do servidor.
+                -->
+                <section id="section-dashboard" class="content-section">
+                    <div class="card glass">
+                        <div class="card-header">
+                            <h2 class="section-title">Lead Management</h2>
+                            <p class="section-subtitle">Recuperação de dados via API REST para populamento da tabela.</p>
+                        </div>
+                        <div class="table-container">
+                            <table class="leads-table">
+                                <thead>
+                                    <tr>
+                                        <th>Status</th>
+                                        <th>Nome / Email</th>
+                                        <th>Interesse</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="leads-list">
+                                    <tr><td colspan="4" class="empty-state">Buscando registros na nuvem...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- 👣 FOOTER: Rodapé informativo -->
+            <footer class="footer">
+                <div class="container">
+                    <p>&copy; 2024 Lab Professional Edition | Neon + Vercel + JavaScript Puro</p>
                 </div>
-                <button type="submit" class="btn btn-primary">Cadastrar</button>
-            </form>
-        </section>
-    </main>
-    <footer class="footer">
-        <p> 2025 leads. Todos os direitos reservados a @devleocarvalho.</p>
-    </footer>
+            </footer>
+        </div> <!-- Fim do wrapper principal -->
+    </div> <!-- Fim do wrapper do app -->
+
+    <!-- 🔔 NOTIFICAÇÃO TOAST (Toast Feedback) -->
+    <div id="toast" class="toast hidden">
+        <span id="toast-message"></span>
+    </div>
+
+    <!-- 🧠 LÓGICA PRINCIPAL (Cérebro do App) -->
     <script src="script.js"></script>
 </body>
 </html>

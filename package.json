@@ -1,0 +1,13 @@
+{
+  "name": "cadastroleads-neon",
+  "version": "1.0.0",
+  "description": "LeadFlow com Neon.tech e Vercel Serverless",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve ."
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.9.0",
+    "dotenv": "^16.4.5"
+  }
+}

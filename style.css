@@ -1,121 +1,147 @@
+/**
+ * 🎨 LEADFLOW ENTERPRISE - ESTILIZAÇÃO PROFISSIONAL
+ * 
+ * Este arquivo ensina como estruturar um layout moderno usando 
+ * CSS Grid, Design Tokens e técnicas de Glassmorphism.
+ */
+
+/* 🌌 DESIGN TOKENS (Variáveis de Design)
+   Por que usar? Facilita a manutenção. Se precisar mudar o roxo, muda em um só lugar.
+*/
+:root {
+    --primary: #8b5cf6;       /* Violeta Vibrante */
+    --primary-hover: #7c3aed; 
+    --bg-dark: #0f172a;       /* Slate 900 (Cor de fundo padrão tech) */
+    --bg-card: rgba(30, 41, 59, 0.7); 
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --error: #ef4444;
+    --success: #10b981;
+    --radius: 12px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 🧱 ELEMENTOS GLOBAIS
+   Resetamos para garantir que o site seja igual em todos os navegadores.
+*/
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #a9a9a9b2;
-  color: #000000;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-dark);
+    /* DICA DE ENGENHARIA: Usar gradientes leves traz sofisticação à interface. */
+    background-image: 
+        radial-gradient(circle at 0% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+    color: var(--text-main);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 10px;
+/* 🏗️ LAYOUT EM COLUNAS (App Shell)
+   O app é dividido entre o Terminal (lateral) e o Conteúdo (centro).
+*/
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
 }
 
-.header {
-  background: #a600ff;
-  color: white;
-  padding: 15px 0;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  text-align: center;
+.main-container-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
 }
 
-.app-title {
-  font-size: 36px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
- 
-.main-content {
-  flex-grow: 1;
-  padding: 20px 0;
-}
-
-.content-section {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
-  display: block;
+/* 📖 TERMINAL DE APRENDIZADO
+   Estilizado para parecer um console de desenvolvedor.
+*/
+.learning-sidebar {
+    width: 350px;
+    background: #0a0f1e;
+    border-right: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
 }
 
-.section-title {
-  font-size: 30px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  border-bottom: 2px solid #eee;
-  padding-bottom: 10px;
-  color: #333;
+.sidebar-header {
+    padding: 24px;
+    background: rgba(139, 92, 246, 0.05);
+    border-bottom: 1px solid var(--glass-border);
 }
 
-.form-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.learning-log {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    font-family: 'Courier New', Courier, monospace;
 }
 
-.form-group {
-  margin-bottom: 10px;
+/* 📊 CRM & GRID LAYOUT
+   O segredo de um formulário profissional está no alinhamento.
+*/
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Duas colunas iguais */
+    gap: 20px;
 }
 
-.form-group label {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  color: #d80000;
-  margin-bottom: 5px;
+.span-2 {
+    grid-column: span 2; /* Ocupa as duas colunas */
 }
 
-.form-group input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #8b0000;
-  border-radius: 6px;
-  font-size: 16px;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease;
+/* Componentes de Formulário reestilizados */
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    color: white;
+    font-family: inherit;
+    transition: var(--transition);
 }
 
-.btn {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  text-align: center;
-  display: inline-block;
-  transition: background-color 0.2s ease, transform 0.1s ease;
+/* 💎 GLASSMORPHISM EFFECT
+   Combinação de transparência, borda fina e blur no fundo.
+*/
+.card.glass {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    padding: 40px;
+    border-radius: 20px;
 }
 
-.btn-primary {
-  background: #007bff;
-  color: white;
+/* 🏷️ STATUS BADGES
+   Usados no Dashboard para dar feedback visual rápido.
+*/
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    display: inline-block;
 }
 
-.btn-primary:hover {
-  background: #0056b3;
+/* 📱 RESPONSIVIDADE (Mobile First Thinking)
+   Se a tela for pequena, o terminal vai para o topo e o grid para 1 coluna.
+*/
+@media (max-width: 1024px) {
+    .app-wrapper { flex-direction: column; }
+    .learning-sidebar { width: 100%; height: 300px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .span-2 { grid-column: span 1; }
 }
 
-.footer {
-  background: #343a40;
-  color: white;
-  padding: 20px 0;
-  text-align: center;
-  margin-top: auto;
-  box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
-}
-
-@media (min-width: 768px) {
-  .header-content {
-    flex-direction: row;
-  }
-  .app-title {
-    text-align: left;
-    margin-bottom: 0;
-  }
-}
+.hidden { display: none !important; }
