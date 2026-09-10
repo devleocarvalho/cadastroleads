@@ -4,6 +4,7 @@
   "description": "LeadFlow com Neon.tech e Vercel Serverless",
   "main": "index.html",
   "scripts": {
+    "dev": "vercel dev",
     "start": "serve ."
   },
   "dependencies": {

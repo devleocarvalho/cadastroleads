@@ -35,6 +35,10 @@
                 <i data-lucide="user-search"></i>
                 <span>Portal do Cliente</span>
             </button>
+            <button class="nav-link" id="nav-auditoria" onclick="showSection('auditoria')">
+                <i data-lucide="shield-alert"></i>
+                <span>Logs de Auditoria</span>
+            </button>
         </nav>
 
         <!-- NOVO: ADMIN AUTH BOX -->
@@ -44,7 +48,7 @@
                 <span>Acesso Restrito</span>
             </div>
             <input type="password" id="admin-key-input" placeholder="Chave do Admin...">
-            <p class="auth-tip">Use: <code>admin123</code> para liberar DELETE/PATCH</p>
+            <p class="auth-tip">Use: <code>admin123</code> para liberar DELETE/PUT/PATCH</p>
         </div>
     </aside>
 
@@ -56,15 +60,76 @@
             <header class="section-header">
                 <div>
                     <h1>Controle de Leads</h1>
-                    <p>Gerencie seus contatos e monitore a segurança</p>
+                    <p>Gerencie seus contatos e monitore a integridade REST</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-secondary" onclick="checkStatus()">
+                    <button class="btn-secondary" onclick="checkStatus()" title="Verificar integridade da API">
                         <i data-lucide="activity"></i>
-                        <span>Check Status (HEAD)</span>
+                        <span>Status (HEAD)</span>
+                    </button>
+                    <button class="btn-secondary" onclick="checkMethods()" title="Inspecionar métodos permitidos">
+                        <i data-lucide="info"></i>
+                        <span>Métodos (OPTIONS)</span>
+                    </button>
+                    <button class="btn-secondary" onclick="exportCSV()" title="Exportar leads visíveis para CSV">
+                        <i data-lucide="download"></i>
+                        <span>Exportar CSV</span>
                     </button>
                 </div>
             </header>
+
+            <!-- KPI STATS CARDS -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span class="kpi-title">Total de Leads</span>
+                        <span class="kpi-value" id="kpi-total">0</span>
+                    </div>
+                    <div class="kpi-icon total"><i data-lucide="users"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span class="kpi-title">Novos</span>
+                        <span class="kpi-value" id="kpi-novos">0</span>
+                    </div>
+                    <div class="kpi-icon novos"><i data-lucide="sparkles"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span class="kpi-title">Em Contato</span>
+                        <span class="kpi-value" id="kpi-contato">0</span>
+                    </div>
+                    <div class="kpi-icon contato"><i data-lucide="phone-call"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <span class="kpi-title">Fechados</span>
+                        <span class="kpi-value" id="kpi-fechados">0</span>
+                    </div>
+                    <div class="kpi-icon fechados"><i data-lucide="check-circle-2"></i></div>
+                </div>
+            </div>
+
+            <!-- FILTERS & SEARCH TOOLBAR -->
+            <div class="table-toolbar">
+                <div class="search-box">
+                    <i data-lucide="search"></i>
+                    <input type="text" id="filter-search" placeholder="Buscar por nome ou e-mail..." oninput="applyFilters()">
+                </div>
+                <div class="filter-controls">
+                    <select id="filter-status" onchange="applyFilters()">
+                        <option value="">Todos os Status</option>
+                        <option value="Novo">Novo</option>
+                        <option value="Em Contato">Em Contato</option>
+                        <option value="Fechado">Fechado</option>
+                    </select>
+                    <select id="filter-servico" onchange="applyFilters()">
+                        <option value="">Todos os Serviços</option>
+                        <option value="Consultoria">Consultoria</option>
+                        <option value="Dev">Desenvolvimento</option>
+                    </select>
+                </div>
+            </div>
 
             <div class="table-container shadow-premium">
                 <table class="leads-table">
@@ -88,33 +153,37 @@
             <header class="section-header">
                 <div>
                     <h1>Novo Cadastro</h1>
-                    <p>Público: Este formulário não exige senha paraPOST.</p>
+                    <p>Público: Este formulário não exige chave de administrador para POST.</p>
                 </div>
             </header>
             <div class="form-card shadow-premium">
                 <form id="form-lead" class="grid-form">
                     <div class="form-group span-2">
                         <label>Nome Completo</label>
-                        <input type="text" id="lead-nome" required>
+                        <input type="text" id="lead-nome" placeholder="Ex: Lucas Martins" required>
                     </div>
                     <div class="form-group">
                         <label>E-mail</label>
-                        <input type="email" id="lead-email" required>
+                        <input type="email" id="lead-email" placeholder="lucas@exemplo.com" required>
                     </div>
                     <div class="form-group">
                         <label>Telefone</label>
-                        <input type="tel" id="lead-telefone" required>
+                        <input type="tel" id="lead-telefone" placeholder="(11) 99999-9999" required>
                     </div>
                     <div class="form-group span-2">
-                        <label>Serviço</label>
+                        <label>Serviço de Interesse</label>
                         <select id="lead-servico">
-                            <option value="Consultoria">Consultoria</option>
-                            <option value="Dev">Desenvolvimento</option>
+                            <option value="Consultoria">Consultoria em Nuvem & Segurança</option>
+                            <option value="Dev">Desenvolvimento Web Full Stack</option>
                         </select>
+                    </div>
+                    <div class="form-group span-2">
+                        <label>Mensagem / Observações</label>
+                        <textarea id="lead-mensagem" rows="3" placeholder="Conte-nos sobre sua necessidade ou desafio..."></textarea>
                     </div>
                     <div class="form-actions span-2">
                         <button type="submit" class="btn-primary" id="btn-submit">
-                            <span>Gravar no Neon</span>
+                            <span>Gravar Lead no Neon</span>
                         </button>
                     </div>
                 </form>
@@ -126,17 +195,49 @@
             <header class="section-header">
                 <div>
                     <h1>Portal do Cliente</h1>
-                    <p>Consulta de saldo via GET (Público)</p>
+                    <p>Consulta de saldo em tempo real via GET (Público no Schema Billing)</p>
                 </div>
             </header>
             <div class="form-card shadow-premium">
                 <div class="consulta-box">
                     <div class="search-input-group">
-                        <input type="email" id="consulta-email" placeholder="Digite seu e-mail de cliente...">
+                        <input type="email" id="consulta-email" placeholder="Digite seu e-mail cadastrado...">
                         <button class="btn-primary" onclick="consultarSaldo()">Consultar</button>
                     </div>
                     <div id="resultado-consulta" class="resultado-box hidden"></div>
                 </div>
+            </div>
+        </section>
+
+        <!-- SECTION: AUDITORIA -->
+        <section id="section-auditoria" class="content-section">
+            <header class="section-header">
+                <div>
+                    <h1>Logs de Auditoria (Schema audit.Log)</h1>
+                    <p>Registros automáticos gerados pela Trigger PL/pgSQL no PostgreSQL ao excluir leads</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-secondary" onclick="fetchAuditLogs()">
+                        <i data-lucide="refresh-cw"></i>
+                        <span>Atualizar Logs</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="table-container shadow-premium">
+                <table class="leads-table">
+                    <thead>
+                        <tr>
+                            <th>ID / Ação</th>
+                            <th>Tabela Alvo</th>
+                            <th>Lead Deletado (JSONB)</th>
+                            <th>Data e Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-list">
+                        <!-- Gerado via JS -->
+                    </tbody>
+                </table>
             </div>
         </section>
 
@@ -155,6 +256,57 @@
             <!-- Logs em tempo real -->
         </div>
     </aside>
+
+    <!-- MODAL DE EDIÇÃO (PUT) -->
+    <div id="modal-edit" class="modal-backdrop hidden">
+        <div class="modal-box shadow-premium">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 0.6rem;">
+                    <i data-lucide="pencil" style="color: var(--primary);"></i>
+                    <h2>Editar Lead (PUT Completo)</h2>
+                </div>
+                <button class="btn-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form id="form-edit" class="grid-form" onsubmit="submitEditLead(event)">
+                <input type="hidden" id="edit-id">
+                <div class="form-group span-2">
+                    <label>Nome Completo</label>
+                    <input type="text" id="edit-nome" required>
+                </div>
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" id="edit-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="tel" id="edit-telefone">
+                </div>
+                <div class="form-group">
+                    <label>Serviço</label>
+                    <select id="edit-servico">
+                        <option value="Consultoria">Consultoria</option>
+                        <option value="Dev">Desenvolvimento</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="edit-status">
+                        <option value="Novo">Novo</option>
+                        <option value="Em Contato">Em Contato</option>
+                        <option value="Fechado">Fechado</option>
+                    </select>
+                </div>
+                <div class="form-group span-2">
+                    <label>Mensagem / Observações</label>
+                    <textarea id="edit-mensagem" rows="2"></textarea>
+                </div>
+                <div class="form-actions span-2 modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeEditModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar Alterações (PUT)</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div id="toast" class="toast hidden">
         <span id="toast-message"></span>

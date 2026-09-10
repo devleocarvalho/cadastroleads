@@ -73,27 +73,26 @@ Este projeto é um laboratório completo de verbos HTTP:
 
 ## 🚀 Como subir o seu próprio sistema
 
-### 1. Preparação do Neon (Banco)
-Execute este script no Neon SQL Editor para "zerar" e criar a tabela correta:
-```sql
-DROP TABLE IF EXISTS Leads;
-CREATE TABLE Leads (
-    id SERIAL PRIMARY KEY,
-    nome VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    telefone VARCHAR(50),
-    servico VARCHAR(100),
-    mensagem TEXT,
-    status VARCHAR(50) DEFAULT 'Novo',
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-```
+### 1. Preparação do Neon (Banco Multi-Schema)
+Abra o **Neon SQL Editor** e execute o conteúdo do arquivo [`schema.sql`](file:///c:/leo/programacao/projetos/Desafios_para%20_trabalho/cadastroleads/schema.sql) presente na raiz do projeto. Ele cria a estrutura completa:
+
+* **Schema `crm`**: Tabela `crm.Leads` com campos de identificação, contato (`telefone`), tipo de serviço e status.
+* **Schema `billing`**: Tabela `billing.Contas` com saldo de horas sincronizado automaticamente ao cadastrar um lead.
+* **Schema `audit`**: Tabela `audit.Log` e Trigger PL/pgSQL `trg_audit_lead_delete` que registra automaticamente qualquer lead excluído.
 
 ### 2. Deploy na Vercel
-1.  Suba o código no seu GitHub.
-2.  Importe na Vercel.
-3.  Adicione a variável de ambiente `DATABASE_URL` com sua conexão do Neon.
-4.  A Vercel criará automaticamente o **Endpoint de API** em `/api/leads`.
- Definiremos uma senha simples (ex: admin123) para fins educativos.
+1. Suba o repositório no seu GitHub.
+2. Importe o projeto na [Vercel](https://vercel.com).
+3. Adicione as seguintes Variáveis de Ambiente (*Environment Variables*):
+   * `DATABASE_URL`: String de conexão fornecida pelo painel do Neon.
+   * `ADMIN_KEY`: Chave para métodos sensíveis (padrão: `admin123`).
+4. A Vercel criará automaticamente as Serverless Functions em `/api/leads`, `/api/consulta` e `/api/audit`.
+
+### 3. Desenvolvimento Local
+Para rodar localmente com suporte às Serverless Functions da pasta `/api`:
+```bash
+npx vercel dev
+```
+
 ---
 Desenvolvido por **Leonardo Carvalho** | *Tecnologia e Educação em Nuvem*
